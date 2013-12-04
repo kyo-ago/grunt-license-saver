@@ -4,10 +4,15 @@
   "description": "Save to license.json",
   "main": "tasks/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "grunt test"
   },
   "dependencies": {
-    "esprima": "~1.0.4"
+    "esprima": "latest"
+  },
+  "devDependencies": {
+    "grunt-contrib-nodeunit": "latest",
+    "grunt-contrib-clean" : "latest",
+    "grunt-contrib-watch" : "latest"
   },
   "author": "kyo_ago",
   "license": "MIT"

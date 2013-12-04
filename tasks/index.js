@@ -1,44 +1,44 @@
 'use strict';
+
 module.exports = function (grunt) {
 	var _ = grunt.util._;
 	var esprima = require('esprima');
-	var licenseRegExp = /BSD|MIT|License/i;
-	grunt.registerTask('save_license', 'Save the license', function () {
+	var licenseRegExp = /MIT|GPL|License/i;
+	grunt.registerMultiTask('save_license', 'Save the license', function () {
 		this.files.forEach(function (file) {
-			var valid = file.src.filter(grunt.file.exists.bind(grunt.file));
+			var validFiles = file.src.filter(function (file) {
+				return grunt.file.exists(file);
+			});
 
-			_.difference(file.src, valid).forEach(function (filepath) {
+			_.difference(file.src, validFiles).forEach(function (filepath) {
 				grunt.log.warn('Source file "' + filepath + '" not found.');
 			});
 
-			var licenses = valid
-				.map(flookupLocenses)
-				.filter(function (hit) {
-					return hit.license;
-				})
-			;
+			var json = JSON.stringify(fileToLicenses(validFiles), null, '\t');
 
-			grunt.file.write(file.dest || 'licenses.json', JSON.stringify(licenses, null, '\t'));
+			grunt.file.write(file.dest || 'licenses.json', json);
 		})
 	});
-	function lookupLocenses (src) {
+	function fileToLicenses (files) {
+		return _.chain(files)
+			.map(lookupLicense)
+			.uniq()
+			.filter(function (hit) {
+				return hit;
+			}).value()
+		;
+	}
+	function lookupLicense (src) {
 		var code = grunt.file.read(src);
-		var comments = esprima.parse(code, { 'comment' : true }).comments;
-		if (!comments.length) {
-			return;
-		}
-		var license = _.chain(comments)
+		var ast = esprima.parse(code, { 'comment' : true });
+		return _.chain(ast.comments)
 			.map(function (cmm) {
 				return cmm.value;
 			}).filter(function (cmm) {
 				return cmm;
 			}).find(function (cmm) {
-				return cmm.value.match(licenseRegExp);
+				return cmm.match(licenseRegExp);
 			}).value()
 		;
-		return {
-			'file' : src,
-			'license' : license
-		};
 	}
 };
