@@ -13,6 +13,7 @@ module.exports = function(grunt) {
 		return obj;
 	}, {});
 	grunt.initConfig({
+		'pkg' : grunt.file.readJSON('package.json'),
 		'nodeunit' : {
 			'tests' : ['test/*_test.js']
 		},
@@ -25,12 +26,19 @@ module.exports = function(grunt) {
 				'files' : ['./tasks/*', './test/*'],
 				'tasks' : ['nodeunit']
 			}
+		},
+		'release' : {
+			'options' : {}
 		}
 	});
 	grunt.loadTasks('tasks');
+
 	grunt.loadNpmTasks('grunt-contrib-nodeunit');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-release');
+
 	grunt.registerTask('test', ['clean', 'save_license', 'nodeunit']);
 	grunt.registerTask('testWatch', ['test', 'watch']);
+    grunt.registerTask('release', ['release:patch']);
 };

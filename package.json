@@ -7,12 +7,13 @@
     "test": "grunt test"
   },
   "dependencies": {
-    "esprima": "latest"
+    "esprima": "~1.0.4"
   },
   "devDependencies": {
-    "grunt-contrib-nodeunit": "latest",
-    "grunt-contrib-clean" : "latest",
-    "grunt-contrib-watch" : "latest"
+    "grunt-contrib-nodeunit": "~0.2.2",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-release": "~0.6.0"
   },
   "author": "kyo_ago",
   "license": "MIT"
