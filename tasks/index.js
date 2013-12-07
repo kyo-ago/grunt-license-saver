@@ -3,7 +3,7 @@
 module.exports = function (grunt) {
 	var _ = grunt.util._;
 	var esprima = require('esprima');
-	var licenseRegExp = /\bMIT\b|\bGPL\b|License/i;
+	var licenseRegExp = /\bMIT\b|\bGPL\b|\(c\)|License|Copyright/i;
 	grunt.registerMultiTask('save_license', 'Save the license', function () {
 		this.files.forEach(function (file) {
 			var validFiles = file.src.filter(function (file) {
@@ -31,22 +31,41 @@ module.exports = function (grunt) {
 	}
 	function lookupLicense (src) {
 		var code = grunt.file.read(src);
-		code = code
-			.replace(/[\r\n]+/g, '\n')
-			.replace(/^(\/\/[\s\S]*?)(\n[^\/][^\/])/,
-				function (all, head, cmm) {
-					return head
-						.replace(/\n\/\//g, '\n')
-						.replace(/^\/\//, '/*\n') + '\n*/' + cmm;
-				})
-		;
-		var ast = esprima.parse(code, { 'comment' : true });
-		return _.chain(ast.comments)
-			.map(function (cmm) {
-				return cmm.value;
-			}).filter(function (cmm) {
-				return cmm && cmm.match && cmm.match(licenseRegExp);
-			}).value()
-		;
+		code = code.replace(/[\r\n]+/g, '\n');
+		var comments;
+		try {
+			comments = esprima.parse(code, {
+				'comment' : true,
+				'loc' : true
+			}).comments;
+		} catch (e) {
+			console.warn('esprima.parse error:', src);
+			return;
+		}
+
+		var current = {
+			'line' : 0,
+			'values' : []
+		};
+		var blocks = comments.map(function (comment) {
+			if (comment.type !== 'Line') {
+				return comment.value;
+			}
+			current.line++;
+			if (current.line === comment.loc.start.line) {
+				current.values.push(comment.value);
+				return;
+			}
+			var values = current.values.join('\n');
+			current = {
+				'line' : comment.loc.start.line,
+				'values' : [comment.value]
+			};
+			return values;
+		});
+		blocks.push(current.values.join('\n'));
+		return blocks.filter(function (cmm) {
+			return cmm && cmm.match && cmm.match(licenseRegExp);
+		});
 	}
 };

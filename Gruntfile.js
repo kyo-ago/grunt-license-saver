@@ -7,7 +7,7 @@ module.exports = function(grunt) {
 	var param = files.reduce(function (obj, file) {
 		var base = path.basename(file);
 		obj[base] = {
-			'src' : [file + '/*.js'],
+			'src' : [file + '/**/*.js'],
 			'dest' : 'tmp/' + base + '.json'
 		};
 		return obj;
