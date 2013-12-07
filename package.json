@@ -1,7 +1,7 @@
 {
-  "name": "grunt-save-license",
+  "name": "grunt-license-server",
   "version": "0.0.0",
-  "description": "Save to license.json",
+  "description": "Store the license of the library you are using.",
   "main": "tasks/index.js",
   "scripts": {
     "test": "grunt test"
