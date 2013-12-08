@@ -3,33 +3,32 @@
 module.exports = function (grunt) {
 	var _ = grunt.util._;
 	var esprima = require('esprima');
-	var licenseRegExp = /\bMIT\b|\bGPL\b|\(c\)|License|Copyright/i;
+	var licenseRegExp = /\bMIT\b|\bMPL\b|\bGPL\b|\(c\)|License|Copyright/i;
 	grunt.registerMultiTask('save_license', 'Save the license', function () {
 		this.files.forEach(function (file) {
-			var validFiles = file.src.filter(function (file) {
-				return grunt.file.exists(file);
-			});
-
-			_.difference(file.src, validFiles).forEach(function (filepath) {
-				grunt.log.warn('Source file "' + filepath + '" not found.');
-			});
-
-			var json = JSON.stringify(fileToLicenses(validFiles), null, '\t');
-
+			var licenses = _.chain(checkFiles(file))
+				.map(codeParse)
+				.map(lookupLicenses)
+				.flatten()
+				.uniq()
+				.filter(function (hit) {
+					return hit;
+				}).value()
+			;
+			var json = JSON.stringify(licenses, null, '\t');
 			grunt.file.write(file.dest || 'licenses.json', json);
 		})
 	});
-	function fileToLicenses (files) {
-		return _.chain(files)
-			.map(lookupLicense)
-			.flatten()
-			.uniq()
-			.filter(function (hit) {
-				return hit;
-			}).value()
-		;
+	function checkFiles (file) {
+		var valids = file.src.filter(function (file) {
+			return grunt.file.exists(file);
+		});
+		_.difference(file.src, valids).forEach(function (path) {
+			grunt.log.warn('Source file "' + path + '" not found.');
+		});
+		return valids;
 	}
-	function lookupLicense (src) {
+	function codeParse (src) {
 		var code = grunt.file.read(src);
 		code = code.replace(/[\r\n]+/g, '\n');
 		var comments;
@@ -40,9 +39,11 @@ module.exports = function (grunt) {
 			}).comments;
 		} catch (e) {
 			console.warn('esprima.parse error:', src);
-			return;
+			return [];
 		}
-
+		return comments;
+	}
+	function lookupLicenses (comments) {
 		var current = {
 			'line' : 0,
 			'values' : []
@@ -63,7 +64,9 @@ module.exports = function (grunt) {
 			};
 			return values;
 		});
-		blocks.push(current.values.join('\n'));
+		if (current.values.length) {
+			blocks.push(current.values.join('\n'));
+		}
 		return blocks.filter(function (cmm) {
 			return cmm && cmm.match && cmm.match(licenseRegExp);
 		});
