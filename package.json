@@ -1,5 +1,5 @@
 {
-  "name": "grunt-license-server",
+  "name": "grunt-license-saver",
   "version": "0.0.0",
   "description": "Store the license of the library you are using.",
   "main": "tasks/index.js",
