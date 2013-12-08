@@ -1,4 +1,13 @@
+/*
+ * grunt-license-saver
+ *
+ * Copyright (c) 2013 kyo_ago
+ * Licensed under the MIT license.
+ */
+
 'use strict';
+
+var path = require('path');
 
 module.exports = function (grunt) {
 	var _ = grunt.util._;
@@ -15,8 +24,11 @@ module.exports = function (grunt) {
 					return hit;
 				}).value()
 			;
-			var json = JSON.stringify(licenses, null, '\t');
-			grunt.file.write(file.dest || 'licenses.json', json);
+			var dests = _.isArray(file.dest) ? file.dest : [file.dest || 'licenses.json'];
+			dests.forEach(function (dest) {
+				var format = lookupFormat(dest, file.format);
+				grunt.file.write(dest, formatLicense(licenses, format));
+			});
 		})
 	});
 	function checkFiles (file) {
@@ -70,5 +82,36 @@ module.exports = function (grunt) {
 		return blocks.filter(function (cmm) {
 			return cmm && cmm.match && cmm.match(licenseRegExp);
 		});
+	}
+	function lookupFormat (dest, format) {
+		format = (format || '').toLowerCase();
+		if (!_.contains(['text', 'javascript', 'markdown', 'json', ''], format)) {
+			console.warn('illegal‎ format. expect:text or javascript or markdown or json, actual:', format);
+		}
+		var ext = (path.extname(dest) || '').toLowerCase().replace(/^\./, '');
+		return format ? format : ({
+			'txt' : 'text',
+			'js' : 'javascript',
+			'md' : 'markdown',
+			'json' : 'json'
+		})[ext] || 'text';
+	}
+	function formatLicense (licenses, format) {
+		return ({
+			'text' : function (licenses) {
+				return licenses.join('\n\n');
+			},
+			'javascript' : function (licenses) {
+				return 'var lisences = ' + JSON.stringify(licenses) + ';';
+			},
+			'markdown' : function (licenses) {
+				return licenses.map(function (license) {
+					return '```' + license.split(/\r?\n/).join('\n\t') + '\n```';
+				}).join('\n\n');
+			},
+			'json' : function (licenses) {
+				return JSON.stringify(licenses, null, '\t');
+			}
+		})[format](licenses);
 	}
 };

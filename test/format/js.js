@@ -1,0 +1,1 @@
+var lisences = ["\n * Base license\n *\n * Copyright (c) 2013 kyo_ago\n * Licensed under the MIT license.\n "];
