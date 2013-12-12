@@ -3,7 +3,7 @@
 var path = require('path');
 
 module.exports = function(grunt) {
-	var _ = grunt.util._;
+	var _ = require('lodash');
 
 	grunt.initConfig({
 		'pkg' : grunt.file.readJSON('package.json'),
@@ -43,7 +43,7 @@ module.exports = function(grunt) {
 			'format_multi' : {
 				'src' : ['test/format/index.js'],
 				'dest' : ['tmp/multi.txt', 'tmp/multi.js']
-			},
+			}
 		}),
 		'clean' : {
 			'tests' : ['tmp']
