@@ -10,7 +10,7 @@
 var path = require('path');
 
 module.exports = function (grunt) {
-	var _ = grunt.util._;
+	var _ = require('lodash');
 	var esprima = require('esprima');
 	var licenseRegExp = /\bMIT\b|\bMPL\b|\bGPL\b|\(c\)|License|Copyright/i;
 	grunt.registerMultiTask('save_license', 'Save the license', function () {
@@ -29,7 +29,7 @@ module.exports = function (grunt) {
 				var format = lookupFormat(dest, file.format);
 				grunt.file.write(dest, formatLicense(licenses, format));
 			});
-		})
+		});
 	});
 	function checkFiles (file) {
 		var valids = file.src.filter(function (file) {
