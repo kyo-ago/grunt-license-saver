@@ -7,15 +7,15 @@
     "test": "node_modules/grunt-cli/bin/grunt test"
   },
   "dependencies": {
-    "esprima": "~1.0.4",
-    "lodash": "~2.4.1"
+    "esprima": "~4.0.0",
+    "lodash": "~4.17.4"
   },
   "devDependencies": {
-    "grunt-contrib-nodeunit": "~0.2.2",
-    "grunt-contrib-clean": "~0.5.0",
-    "grunt-contrib-watch": "~0.5.3",
-    "grunt-release": "~0.6.0",
-    "grunt-cli": "~0.1.11"
+    "grunt-contrib-nodeunit": "~1.0.0",
+    "grunt-contrib-clean": "~1.1.0",
+    "grunt-contrib-watch": "~1.0.0",
+    "grunt-release": "~0.14.0",
+    "grunt-cli": "~1.2.0"
   },
   "author": "kyo_ago",
   "license": "MIT"
