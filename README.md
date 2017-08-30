@@ -1,5 +1,7 @@
 # grunt-license-saver [![Build Status](https://travis-ci.org/kyo-ago/grunt-license-saver.png?branch=master)](https://travis-ci.org/kyo-ago/grunt-license-saver) [![David](https://david-dm.org/kyo-ago/grunt-license-saver.png)](https://david-dm.org/kyo-ago/grunt-license-saver.png)
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/kyo-ago/grunt-license-saver.svg)](https://greenkeeper.io/)
+
 > Store the license of the library you are using.
 
 ## Getting Started
